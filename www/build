@@ -1,5 +1,0 @@
-#!/bin/bash
-npm run-script build
-cp style.css dist
-cp index.js dist
-cp -r res dist
