@@ -1,6 +1,5 @@
 node_modules
 target
 deploy
-dist
 .bin
 pkg
