@@ -1,12 +1,12 @@
-use image::ImageBuffer;
-use image::Rgba;
-use std::env;
-use std::f64;
-use std::fs::File;
-use std::io::Read;
-use std::io::Seek;
-use std::io::SeekFrom;
-use std::process::exit;
+use image::{ImageBuffer, Rgba};
+
+use std::{
+    env,
+    f64,
+    fs::File,
+    io::{Read, Seek, SeekFrom},
+    process,
+};
 
 const LEN: u32 = 600;
 const SPR_RAD: u32 = 10;
@@ -31,53 +31,40 @@ struct Donut {
 
 mod flavors {
     use image::Rgba;
+
     pub struct Flavor {
         pub main: Rgba<u8>,
         pub dark: Rgba<u8>,
     }
+
     pub const VANILLA: Flavor = Flavor {
-        dark: Rgba {
-            data: [235, 235, 235, 255],
-        },
-        main: Rgba {
-            data: [255, 255, 255, 255],
-        },
+        dark: Rgba { data: [235, 235, 235, 255] },
+        main: Rgba { data: [255, 255, 255, 255] },
     };
+
     pub const CHOCOLATE: Flavor = Flavor {
-        main: Rgba {
-            data: [125, 50, 17, 255],
-        },
-        dark: Rgba {
-            data: [94, 37, 12, 255],
-        },
+        main: Rgba { data: [125, 50, 17, 255] },
+        dark: Rgba { data: [94, 37, 12, 255] },
     };
     pub const DOUGH: Flavor = Flavor {
-        dark: Rgba {
-            data: [189, 184, 100, 255],
-        },
-        main: Rgba {
-            data: [245, 240, 142, 255],
-        },
+        dark: Rgba { data: [189, 184, 100, 255] },
+        main: Rgba { data: [245, 240, 142, 255] },
     };
     pub const PINK: Flavor = Flavor {
-        dark: Rgba {
-            data: [196, 106, 136, 255],
-        },
-        main: Rgba {
-            data: [237, 142, 174, 255],
-        },
+        dark: Rgba { data: [196, 106, 136, 255] },
+        main: Rgba { data: [237, 142, 174, 255] },
     };
 }
 
 // Helper functions
 fn dist(x1: u32, y1: u32, x2: u32, y2: u32) -> u32 {
-    return (((x1 as i64 - x2 as i64).pow(2) + (y1 as i64 - y2 as i64).pow(2)) as f64).sqrt() as u32;
+    (((x1 as i64 - x2 as i64).pow(2) + (y1 as i64 - y2 as i64).pow(2)) as f64).sqrt() as u32
 }
 fn frosted_ring(x: u32, y: u32) -> u32 {
     let dy = (MID as f64) - (y as f64);
     let dx = (MID as f64) - (x as f64);
     let a = dy.atan2(dx) * (f64::consts::PI * 4.0);
-    return ((a.cos() * AMP) + (MID as f64 / 2.0)) as u32;
+    ((a.cos() * AMP) + (MID as f64 / 2.0)) as u32
 }
 
 // Main algorithm
@@ -137,7 +124,7 @@ fn build_donut(mut f: File, l: u64) -> Donut {
     }
     return donut;
 }
-fn render_donut(donut: Donut, path: &String) -> () {
+fn render_donut(donut: Donut, path: &str) {
     let mut img: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::new(LEN, LEN);
     let blank: Rgba<u8> = Rgba {
         data: [255, 255, 255, 255],
@@ -192,16 +179,15 @@ fn render_donut(donut: Donut, path: &String) -> () {
         }
     }
     let _ = img.save(path).unwrap();
-    ()
 }
 
-// Main
 fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 || args.len() > 3 {
         println!("Usage: donut input [output]");
-        exit(1)
+        process::exit(1);
     }
+
     let mut input = File::open(&args[1]).unwrap();
     let len = input.seek(SeekFrom::End(0)).unwrap();
     if len > 1000000 {
@@ -213,10 +199,8 @@ fn main() {
     let _ = input.seek(SeekFrom::Start(0));
     println!("Encrypting file...");
     let donut = build_donut(input, len);
-    let mut output: &String = &String::from("../donut.png");
-    if args.len() > 2 {
-        output = &args[2]
-    }
+
+    let output = args.get(2).map(|s| &**s).unwrap_or("../donut.png");
     println!("Rendering...");
     render_donut(donut, output);
     println!("Algorithm ran to completion");
