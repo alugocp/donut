@@ -58,14 +58,15 @@ mod flavors {
 
 // Helper functions
 fn dist(x1: u32, y1: u32, x2: u32, y2: u32) -> u32 {
-    return (((x1 as i64 - x2 as i64).pow(2) + (y1 as i64 - y2 as i64).pow(2)) as f64).sqrt() as u32;
+    (((x1 as i64 - x2 as i64).pow(2) + (y1 as i64 - y2 as i64).pow(2)) as f64).sqrt() as u32
 }
 
 fn frosted_ring(x: u32, y: u32) -> u32 {
     let dy = (MID as f64) - (y as f64);
     let dx = (MID as f64) - (x as f64);
     let a = dy.atan2(dx) * (f64::consts::PI * 4.0);
-    return ((a.cos() * AMP) + (MID as f64 / 2.0)) as u32;
+
+    ((a.cos() * AMP) + (MID as f64 / 2.0)) as u32
 }
 
 // Main algorithm
@@ -127,7 +128,7 @@ fn build_donut(mut f: File, l: u64) -> Donut {
         })
     }
 
-    return donut;
+    donut
 }
 
 fn render_donut(donut: Donut, path: &str) {
