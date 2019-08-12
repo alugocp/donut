@@ -21,7 +21,7 @@ fn main() -> donut::Result {
         println!("File passed of length {} bytes", len);
     }
 
-    println!("Encrypting file...");
+    println!("Processing file...");
     let donut = Donut::generate_from_reader(&mut input)?;
 
     let mut output_path = "../donut.png";
