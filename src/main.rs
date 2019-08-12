@@ -3,9 +3,7 @@ use image::Rgba;
 use std::env;
 use std::f64;
 use std::fs::File;
-use std::io::Read;
-use std::io::Seek;
-use std::io::SeekFrom;
+use std::io::{Read, Seek, SeekFrom};
 use std::process::exit;
 
 const LEN: u32 = 600;
@@ -70,7 +68,7 @@ fn frosted_ring(x: u32, y: u32) -> u32 {
 }
 
 // Main algorithm
-fn build_donut(mut f: File, l: u64) -> Donut {
+fn build_donut<R: Read + Seek>(reader: &mut R, l: u64) -> Donut {
     let mut donut: Donut = Donut {
         frosting: flavors::CHOCOLATE.main,
         darker: flavors::CHOCOLATE.dark,
@@ -100,9 +98,9 @@ fn build_donut(mut f: File, l: u64) -> Donut {
 
     for i in 0..LIMIT {
         let di = if n < LIMIT { 1 } else { n / LIMIT };
-        let _ = f.seek(SeekFrom::Start(((i * di * n) as u64) % l)).unwrap();
+        let _ = reader.seek(SeekFrom::Start(((i * di * n) as u64) % l)).unwrap();
 
-        f.read(&mut buffer).unwrap();
+        reader.read_exact(&mut buffer).unwrap();
 
         if n < LIMIT {
             for j in n..LIMIT {
@@ -218,7 +216,7 @@ fn main() {
     let _ = input.seek(SeekFrom::Start(0));
 
     println!("Encrypting file...");
-    let donut = build_donut(input, len);
+    let donut = build_donut(&mut input, len);
     let mut output: &String = &String::from("../donut.png");
 
     if args.len() > 2 {
