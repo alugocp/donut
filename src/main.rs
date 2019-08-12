@@ -217,15 +217,15 @@ fn main() {
 
     println!("Encrypting file...");
     let donut = build_donut(&mut input, len);
-    let mut output: &String = &String::from("../donut.png");
 
+    let mut output_path = "../donut.png";
     if args.len() > 2 {
-        output = &args[2]
+        output_path = &args[2];
     }
 
     println!("Rendering...");
-    render_donut(donut, output);
+    render_donut(donut, output_path);
 
     println!("Algorithm ran to completion");
-    println!("Donut written to {}", output)
+    println!("Donut written to {}", output_path)
 }
