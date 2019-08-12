@@ -127,7 +127,7 @@ fn build_donut<R: Read + Seek>(reader: &mut R) -> Result<Donut> {
             x: ((r * a.cos()) + m) as u32,
             y: ((r * a.sin()) + m) as u32,
             r: rot,
-        })
+        });
     }
 
     Ok(donut)
@@ -176,7 +176,7 @@ fn render_donut(donut: Donut, path: &str) -> Result {
 
                 if d < SPR_RAD {
                     img.put_pixel((x as i32 + dx) as u32, (y as i32 + dy) as u32, s.color);
-                    img.put_pixel((x as i32 - dx) as u32, (y as i32 - dy) as u32, s.color)
+                    img.put_pixel((x as i32 - dx) as u32, (y as i32 - dy) as u32, s.color);
                 }
 
                 let x1 = ((d as f64 * (a + s.r).cos()) as i32 + (s.x as i32)) as u32;
@@ -190,7 +190,7 @@ fn render_donut(donut: Donut, path: &str) -> Result {
                 img.put_pixel(x1 + 1, y1 + 1, s.color);
                 img.put_pixel(x1 + 1, y1 - 1, s.color);
                 img.put_pixel(x1 - 1, y1 + 1, s.color);
-                img.put_pixel(x1 - 1, y1 - 1, s.color)
+                img.put_pixel(x1 - 1, y1 - 1, s.color);
             }
         }
     }
@@ -205,7 +205,7 @@ fn main() -> Result {
 
     if args.len() < 2 || args.len() > 3 {
         println!("Usage: donut input [output]");
-        exit(1)
+        exit(1);
     }
 
     let mut input = File::open(&args[1])?;
@@ -213,9 +213,9 @@ fn main() -> Result {
 
     if len > 1_000_000 {
         let mb = len / 1_000_000;
-        println!("File passed of length {}MB", mb)
+        println!("File passed of length {}MB", mb);
     } else {
-        println!("File passed of length {} bytes", len)
+        println!("File passed of length {} bytes", len);
     }
 
     println!("Encrypting file...");
