@@ -13,6 +13,8 @@ const PADDING: u32 = 8;
 const LIMIT: u64 = 25;
 const AMP: f64 = 10.0;
 
+type Result<T = (), E = Box<dyn std::error::Error>> = std::result::Result<T, E>;
+
 struct Sprinkle {
     color: Rgba<u8>,
     x: u32,
@@ -68,7 +70,7 @@ fn frosted_ring(x: u32, y: u32) -> u32 {
 }
 
 // Main algorithm
-fn build_donut<R: Read + Seek>(reader: &mut R) -> Donut {
+fn build_donut<R: Read + Seek>(reader: &mut R) -> Result<Donut> {
     let mut donut: Donut = Donut {
         frosting: flavors::CHOCOLATE.main,
         darker: flavors::CHOCOLATE.dark,
@@ -77,7 +79,7 @@ fn build_donut<R: Read + Seek>(reader: &mut R) -> Donut {
         sprinkles: Vec::new(),
     };
 
-    let len = reader.seek(SeekFrom::End(0)).unwrap();
+    let len = reader.seek(SeekFrom::End(0))?;
     // Set dough and frosting colors
     let n = (len as f64).sqrt() as u64;
 
@@ -100,9 +102,9 @@ fn build_donut<R: Read + Seek>(reader: &mut R) -> Donut {
 
     for i in 0..LIMIT {
         let di = if n < LIMIT { 1 } else { n / LIMIT };
-        let _ = reader.seek(SeekFrom::Start(((i * di * n) as u64) % len)).unwrap();
+        reader.seek(SeekFrom::Start(((i * di * n) as u64) % len))?;
 
-        reader.read_exact(&mut buffer).unwrap();
+        reader.read_exact(&mut buffer)?;
 
         if n < LIMIT {
             for j in n..LIMIT {
@@ -128,10 +130,10 @@ fn build_donut<R: Read + Seek>(reader: &mut R) -> Donut {
         })
     }
 
-    donut
+    Ok(donut)
 }
 
-fn render_donut(donut: Donut, path: &str) {
+fn render_donut(donut: Donut, path: &str) -> Result {
     let mut img: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::new(LEN, LEN);
     let blank: Rgba<u8> = Rgba([255, 255, 255, 255]);
 
@@ -193,11 +195,12 @@ fn render_donut(donut: Donut, path: &str) {
         }
     }
 
-    let _ = img.save(path).unwrap();
+    img.save(path)?;
+
+    Ok(())
 }
 
-// Main
-fn main() {
+fn main() -> Result {
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 || args.len() > 3 {
@@ -205,8 +208,8 @@ fn main() {
         exit(1)
     }
 
-    let mut input = File::open(&args[1]).unwrap();
-    let len = input.metadata().unwrap().len();
+    let mut input = File::open(&args[1])?;
+    let len = input.metadata()?.len();
 
     if len > 1_000_000 {
         let mb = len / 1_000_000;
@@ -216,7 +219,7 @@ fn main() {
     }
 
     println!("Encrypting file...");
-    let donut = build_donut(&mut input);
+    let donut = build_donut(&mut input)?;
 
     let mut output_path = "../donut.png";
     if args.len() > 2 {
@@ -224,8 +227,10 @@ fn main() {
     }
 
     println!("Rendering...");
-    render_donut(donut, output_path);
+    render_donut(donut, output_path)?;
 
     println!("Algorithm ran to completion");
-    println!("Donut written to {}", output_path)
+    println!("Donut written to {}", output_path);
+
+    Ok(())
 }
