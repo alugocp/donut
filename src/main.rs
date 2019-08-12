@@ -182,7 +182,7 @@ fn main() {
 		println!("File passed of length {} bytes",len)
 	}
 	let _=input.seek(SeekFrom::Start(0));
-	println!("Encrypting file...");
+	println!("Processing file...");
 	let donut=build_donut(input,len);
 	let mut output:&String=&String::from("../donut.png");
 	if args.len()>2 { output=&args[2] }
