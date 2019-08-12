@@ -1,6 +1,7 @@
 use std::env;
 use std::fs::File;
 use std::process::exit;
+use donut::Donut;
 
 fn main() -> donut::Result {
     let args: Vec<String> = env::args().collect();
@@ -21,7 +22,7 @@ fn main() -> donut::Result {
     }
 
     println!("Encrypting file...");
-    let donut = donut::build_donut(&mut input)?;
+    let donut = Donut::generate_from_reader(&mut input)?;
 
     let mut output_path = "../donut.png";
     if args.len() > 2 {
@@ -29,7 +30,7 @@ fn main() -> donut::Result {
     }
 
     println!("Rendering...");
-    let img = donut::render_donut(donut)?;
+    let img = donut.render()?;
 
     println!("Saving...");
     img.save(output_path)?;
