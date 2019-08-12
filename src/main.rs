@@ -206,8 +206,8 @@ fn main() {
     let mut input = File::open(&args[1]).unwrap();
     let len = input.seek(SeekFrom::End(0)).unwrap();
 
-    if len > 1000000 {
-        let mb = len / 1000000;
+    if len > 1_000_000 {
+        let mb = len / 1_000_000;
         println!("File passed of length {}MB", mb)
     } else {
         println!("File passed of length {} bytes", len)
