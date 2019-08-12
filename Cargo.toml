@@ -5,4 +5,4 @@ authors = ["alugocp <alugocp@aim.com>"]
 edition = "2018"
 
 [dependencies]
-image = "0.21.0"
+image = "0.22.1"
