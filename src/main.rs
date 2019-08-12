@@ -1,5 +1,4 @@
-use image::ImageBuffer;
-use image::Rgba;
+use image::{RgbaImage, Rgba};
 use std::env;
 use std::f64;
 use std::fs::File;
@@ -134,8 +133,8 @@ fn build_donut<R: Read + Seek>(reader: &mut R) -> Result<Donut> {
     Ok(donut)
 }
 
-fn render_donut(donut: Donut, path: &str) -> Result {
-    let mut img: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::new(LEN, LEN);
+fn render_donut(donut: Donut) -> Result<RgbaImage> {
+    let mut img = RgbaImage::new(LEN, LEN);
     let blank: Rgba<u8> = Rgba([255, 255, 255, 255]);
 
     for x in 0..LEN {
@@ -196,9 +195,7 @@ fn render_donut(donut: Donut, path: &str) -> Result {
         }
     }
 
-    img.save(path)?;
-
-    Ok(())
+    Ok(img)
 }
 
 fn main() -> Result {
@@ -228,7 +225,10 @@ fn main() -> Result {
     }
 
     println!("Rendering...");
-    render_donut(donut, output_path)?;
+    let img = render_donut(donut)?;
+
+    println!("Saving...");
+    img.save(output_path)?;
 
     println!("Algorithm ran to completion");
     println!("Donut written to {}", output_path);
