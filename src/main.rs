@@ -102,8 +102,9 @@ fn build_donut<R: Read + Seek>(reader: &mut R) -> Result<Donut> {
 
     for i in 0..LIMIT {
         let di = if n < LIMIT { 1 } else { n / LIMIT };
-        reader.seek(SeekFrom::Start(((i * di * n) as u64) % len))?;
+        let pos = ((i * di * n) as u64) % len;
 
+        reader.seek(SeekFrom::Start(pos))?;
         reader.read_exact(&mut buffer)?;
 
         if n < LIMIT {
