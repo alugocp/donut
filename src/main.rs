@@ -1,6 +1,8 @@
-use std::env;
-use std::fs::File;
-use std::process::exit;
+use std::{
+    env,
+    fs::File,
+    process::exit,
+};
 use donut::Donut;
 
 fn main() -> donut::Result {
@@ -24,15 +26,12 @@ fn main() -> donut::Result {
     println!("Processing file...");
     let donut = Donut::generate_from_reader(&mut input)?;
 
-    let mut output_path = "../donut.png";
-    if args.len() > 2 {
-        output_path = &args[2];
-    }
 
     println!("Rendering...");
     let img = donut.render()?;
 
     println!("Saving...");
+    let output_path = args.get(2).map(|s| &**s).unwrap_or("../donut.png");
     img.save(output_path)?;
 
     println!("Algorithm ran to completion");

@@ -1,6 +1,8 @@
 use image::{RgbaImage, Rgba};
-use std::f64;
-use std::io::{Read, Seek, SeekFrom};
+use std::{
+    f64,
+    io::{Read, Seek, SeekFrom},
+};
 
 const LEN: u32 = 600;
 const SPR_RAD: u32 = 10;
