@@ -68,7 +68,7 @@ fn frosted_ring(x: u32, y: u32) -> u32 {
 }
 
 // Main algorithm
-fn build_donut<R: Read + Seek>(reader: &mut R, l: u64) -> Donut {
+fn build_donut<R: Read + Seek>(reader: &mut R) -> Donut {
     let mut donut: Donut = Donut {
         frosting: flavors::CHOCOLATE.main,
         darker: flavors::CHOCOLATE.dark,
@@ -76,8 +76,10 @@ fn build_donut<R: Read + Seek>(reader: &mut R, l: u64) -> Donut {
         color: flavors::DOUGH.main,
         sprinkles: Vec::new(),
     };
+
+    let len = reader.seek(SeekFrom::End(0)).unwrap();
     // Set dough and frosting colors
-    let n = (l as f64).sqrt() as u64;
+    let n = (len as f64).sqrt() as u64;
 
     if n < LIMIT {
         donut.border = flavors::CHOCOLATE.dark;
@@ -98,7 +100,7 @@ fn build_donut<R: Read + Seek>(reader: &mut R, l: u64) -> Donut {
 
     for i in 0..LIMIT {
         let di = if n < LIMIT { 1 } else { n / LIMIT };
-        let _ = reader.seek(SeekFrom::Start(((i * di * n) as u64) % l)).unwrap();
+        let _ = reader.seek(SeekFrom::Start(((i * di * n) as u64) % len)).unwrap();
 
         reader.read_exact(&mut buffer).unwrap();
 
@@ -204,7 +206,7 @@ fn main() {
     }
 
     let mut input = File::open(&args[1]).unwrap();
-    let len = input.seek(SeekFrom::End(0)).unwrap();
+    let len = input.metadata().unwrap().len();
 
     if len > 1_000_000 {
         let mb = len / 1_000_000;
@@ -213,10 +215,8 @@ fn main() {
         println!("File passed of length {} bytes", len)
     }
 
-    let _ = input.seek(SeekFrom::Start(0));
-
     println!("Encrypting file...");
-    let donut = build_donut(&mut input, len);
+    let donut = build_donut(&mut input);
 
     let mut output_path = "../donut.png";
     if args.len() > 2 {
